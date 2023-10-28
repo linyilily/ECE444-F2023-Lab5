@@ -78,8 +78,34 @@ def test_messages(client):
 
 def test_delete_message(client):
     """Ensure the messages are being deleted"""
-    rv = client.get('/delete/1')
+    rv = client.get("/delete/1")
     data = json.loads(rv.data)
+    assert data["status"] == 0
+    login(client, app.config["USERNAME"], app.config["PASSWORD"])
+    rv = client.get("/delete/1")
+    data = json.loads(rv.data)
+    assert data["status"] == 1
+
+def test_login_required(client):
+    #add a message, then log out try deleting, then log in try deleting
+    login(client, app.config["USERNAME"], app.config["PASSWORD"])
+    rv1 = client.post(
+        "/add",
+        data=dict(title="<Hello>", text="<strong>HTML</strong> allowed here"),
+        follow_redirects=True,
+    )
+    assert b"No entries here so far" not in rv1.data
+    assert b"&lt;Hello&gt;" in rv1.data
+    assert b"<strong>HTML</strong> allowed here" in rv1.data
+    rv = logout(client)
+    assert b"You were logged out" in rv.data
+    rv2 = client.get("/delete/1")
+    data = json.loads(rv2.data)
+    assert data["status"] == 0
+    assert data["message"] == "Please log in."
+    login(client, app.config["USERNAME"], app.config["PASSWORD"])
+    rv3 = client.get("/delete/1")
+    data = json.loads(rv3.data)
     assert data["status"] == 1
 
 def test_search(client):
@@ -105,6 +131,7 @@ def test_search(client):
     assert rv2.status_code == 200
     assert b"random message" in rv4.data
     assert b"test random message" in rv4.data
-    rv = client.get('/delete/1')
+    login(client, app.config["USERNAME"], app.config["PASSWORD"])
+    rv = client.get("/delete/1")
     data = json.loads(rv.data)
     assert data["status"] == 1
