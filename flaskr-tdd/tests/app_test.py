@@ -81,3 +81,30 @@ def test_delete_message(client):
     rv = client.get('/delete/1')
     data = json.loads(rv.data)
     assert data["status"] == 1
+
+def test_search(client):
+    # add a random message, test if it can be searched, then delete it
+    login(client, app.config["USERNAME"], app.config["PASSWORD"])
+    rv1 = client.post(
+        "/add",
+        data=dict(title="random message", text="test random message"),
+        follow_redirects=True,
+    )
+    assert b"No entries here so far" not in rv1.data
+    assert b"random message" in rv1.data
+    assert b"test random message" in rv1.data
+    rv2 = client.get('/search/?query=random', content_type="html/text")
+    assert rv2.status_code == 200
+    assert b"random message" in rv2.data
+    assert b"test random message" in rv1.data
+    rv3 = client.get('/search/?query=message', content_type="html/text")
+    assert rv2.status_code == 200
+    assert b"random message" in rv3.data
+    assert b"test random message" in rv3.data
+    rv4 = client.get('/search/?query=random message', content_type="html/text")
+    assert rv2.status_code == 200
+    assert b"random message" in rv4.data
+    assert b"test random message" in rv4.data
+    rv = client.get('/delete/1')
+    data = json.loads(rv.data)
+    assert data["status"] == 1
