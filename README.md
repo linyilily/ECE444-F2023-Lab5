@@ -7,3 +7,5 @@ One of the primary advantages of TDD is the higher code quality it promotes. Wri
 However, TDD has its drawbacks. The initial overhead associated with writing tests before code can be costly, leading to a slow curve at the initial stage of development. It also requires developers to be proficient in writing effective tests. The tests also need to be maintained as the code base evolves because outdated or redundant tests can be a burden in further development. Moreover, overemphasis on testing can lead to neglecting design and architecture aspects, which can impact the overall quality of the software. TDD may only be suitable for some projects, especially when requirements are unclear or rapidly changing. A false sense of security can also arise because passing tests doesn't guarantee a bug-free system. 
 
 (the above response is written with the aid of ChatGPT.)
+
+test cases for group project: https://github.com/ECE444-2023Fall/project-1-web-application-design-group27-rubberducks/blob/main/backend/tests/test_app/test_accounts.py#L17-#L23
